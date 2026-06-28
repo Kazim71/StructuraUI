@@ -63,11 +63,19 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/dashboard') || 
     request.nextUrl.pathname.startsWith('/project');
 
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/login');
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup');
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/dashboard/admin');
 
   if (!user && isProtectedRoute) {
     // Redirect unauthenticated users to login page
     return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  if (user && isAdminRoute) {
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+    if (!profile || profile.role !== 'admin') {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
   }
 
   if (user && isAuthRoute) {

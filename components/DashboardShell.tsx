@@ -13,14 +13,16 @@ type Project = {
 
 export default function DashboardShell({
   userEmail,
-  projects,
+  userRole,
   logoutAction,
   createProjectAction,
+  children,
 }: {
   userEmail: string;
-  projects: Project[] | null;
+  userRole?: string;
   logoutAction: () => Promise<void>;
   createProjectAction: (formData: FormData) => Promise<void>;
+  children?: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showNewProject, setShowNewProject] = useState(false);
@@ -53,6 +55,7 @@ export default function DashboardShell({
           <SidebarLink label="All Projects" active />
           <SidebarLink label="Recent" />
           <SidebarLink label="Drafts" />
+          {userRole === "admin" && <SidebarLink label="Admin Panel" />}
           <div className="pt-6">
             <div className="px-3 pb-2 text-xs font-bold uppercase tracking-widest text-[#58554e]/60 dark:text-[#b8b4a8]/60">
               Settings
@@ -153,66 +156,9 @@ export default function DashboardShell({
           </div>
         )}
 
-        {/* Project Grid */}
+        {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-6 lg:p-8">
-          {!projects || projects.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center">
-              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#f1efe6] dark:bg-[#322f28] border border-[#c7bd9b] dark:border-[#4a4940]">
-                <svg className="h-10 w-10 text-[#58554e]/40 dark:text-[#b8b4a8]/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                </svg>
-              </div>
-              <h2 className="text-xl font-bold text-[#3f403c] dark:text-[#e8e6df] mb-2">No projects yet</h2>
-              <p className="text-sm text-[#58554e] dark:text-[#b8b4a8] max-w-sm mb-6">
-                Create your first project to start building beautiful, structured web layouts.
-              </p>
-              <button
-                onClick={() => setShowNewProject(true)}
-                className="rounded-lg bg-[#3f403c] dark:bg-[#e8e6df] px-6 py-3 text-sm font-bold text-white dark:text-[#26251f] hover:bg-[#58554e] dark:hover:bg-[#c7bd9b] transition-colors shadow-md"
-              >
-                Create Your First Project
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-              {projects.map((project) => (
-                <Link
-                  key={project.id}
-                  href={`/project/${project.id}`}
-                  className="group flex flex-col rounded-xl border border-[#c7bd9b] dark:border-[#4a4940] bg-white dark:bg-[#322f28] overflow-hidden shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#809bce]"
-                >
-                  {/* Preview Area */}
-                  <div className="relative h-40 bg-[#f1efe6] dark:bg-[#26251f] flex items-center justify-center border-b border-[#c7bd9b]/50 dark:border-[#4a4940]/50">
-                    <div className="flex flex-col items-center gap-2 opacity-40 group-hover:opacity-60 transition-opacity">
-                      <svg className="h-10 w-10 text-[#58554e] dark:text-[#b8b4a8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-8.25zM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-2.25z" />
-                      </svg>
-                      <span className="text-xs font-bold text-[#58554e] dark:text-[#b8b4a8]">Layout Preview</span>
-                    </div>
-                  </div>
-
-                  {/* Card Footer */}
-                  <div className="px-4 py-3.5 flex items-center justify-between">
-                    <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-[#3f403c] dark:text-[#e8e6df] truncate">
-                        {project.name}
-                      </h3>
-                      <p className="text-xs text-[#58554e]/70 dark:text-[#b8b4a8]/70 mt-0.5">
-                        {new Date(project.created_at).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </p>
-                    </div>
-                    <svg className="h-4 w-4 text-[#58554e]/40 dark:text-[#b8b4a8]/40 group-hover:text-[#809bce] transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                    </svg>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
+          {children}
         </main>
       </div>
     </div>
