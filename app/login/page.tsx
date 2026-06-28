@@ -3,6 +3,7 @@
 import { login } from "@/app/actions/auth";
 import { useState } from "react";
 import Link from "next/link";
+import Logo from "@/components/Logo";
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
@@ -22,11 +23,8 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-[#f8f7f3] p-4 font-sans text-[#3f403c]">
       <div className="w-full max-w-md rounded-xl border border-[#c7bd9b] bg-[#e0dac9] p-10 shadow-2xl">
         <div className="mb-8 text-center">
-          {/* Custom SVG Geometric Logo */}
-          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-[#3f403c] shadow-md">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#f8f7f3" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          <div className="mx-auto mb-5 flex h-14 w-auto items-center justify-center">
+            <Logo className="h-8 text-[#3f403c]" />
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-[#3f403c]">
             Sign In to Workspace

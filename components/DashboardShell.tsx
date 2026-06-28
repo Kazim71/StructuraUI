@@ -43,11 +43,8 @@ export default function DashboardShell({
         `}
       >
         {/* Sidebar Top: Logo */}
-        <div className="flex items-center gap-3 px-6 py-6 border-b border-[#c7bd9b]">
-          <Logo className="h-9 w-9" />
-          <span className="text-lg font-extrabold tracking-tight text-[#3f403c]">
-            StructuraUI
-          </span>
+        <div className="flex items-center px-6 py-6 border-b border-[#c7bd9b]">
+          <Logo className="h-7 text-[#3f403c]" />
         </div>
 
         {/* Sidebar Navigation */}

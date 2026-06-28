@@ -6,6 +6,7 @@ import "grapesjs/dist/css/grapes.min.css";
 import { saveLayoutState } from "@/app/actions/projects";
 import { useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import Logo from "@/components/Logo";
 
 export default function EditorWorkspace() {
   const params = useParams();
@@ -244,11 +245,10 @@ export default function EditorWorkspace() {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[#e0dac9] text-[#3f403c]">
       <header className="flex items-center justify-between px-6 py-4 bg-[#f8f7f3] border-b border-[#c7bd9b] shrink-0">
-        <div className="flex flex-col">
-          <h1 className="text-xl font-bold text-[#3f403c]">
-            StructuraUI Workspace
-          </h1>
-          <p className="text-xs text-[#58554e] mt-1 font-medium">Project ID: {projectId.split('-')[0]}</p>
+        <div className="flex items-center gap-4">
+          <Logo className="h-6 text-[#3f403c]" />
+          <div className="h-6 w-px bg-[#c7bd9b]"></div>
+          <p className="text-xs text-[#58554e] font-medium">Project: {projectId.split('-')[0]}</p>
         </div>
 
         <div className="flex items-center space-x-3 max-w-xl w-full mx-6">
