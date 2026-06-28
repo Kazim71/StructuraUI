@@ -2,38 +2,39 @@
 
 import { login } from "@/app/actions/auth";
 import { useState } from "react";
-import Logo from "@/components/Logo";
 import Link from "next/link";
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (formData: FormData) => {
     setError(null);
+    setIsLoading(true);
     const result = await login(formData);
-    
     if (result?.error) {
       setError(result.error);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f8f7f3] p-4 font-sans">
-      <div className="w-full max-w-md rounded-sm border border-[#c7bd9b] bg-[#e0dac9] p-10 shadow-lg">
+    <div className="flex min-h-screen items-center justify-center bg-[#f8f7f3] p-4 font-sans text-[#3f403c]">
+      <div className="w-full max-w-md rounded-xl border border-[#c7bd9b] bg-[#e0dac9] p-10 shadow-2xl">
         <div className="mb-8 text-center">
-          <div className="flex justify-center mb-4">
-            <Logo className="h-12 w-12" />
+          {/* Custom SVG Geometric Logo */}
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-[#3f403c] shadow-md">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#f8f7f3" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#3f403c]">
-            StructuraUI
+          <h1 className="text-3xl font-extrabold tracking-tight text-[#3f403c]">
+            Sign In to Workspace
           </h1>
-          <p className="mt-2 text-sm font-medium text-[#58554e]">
-            Sign in to your workspace
-          </p>
         </div>
 
         {error && (
-          <div className="mb-6 rounded-sm bg-[#b8e0d4] p-4 text-sm font-bold text-[#3f403c] border border-[#809bce]">
+          <div className="mb-6 rounded-lg bg-[#b8e0d4] p-4 text-sm font-bold text-[#3f403c] border border-[#809bce]">
             {error}
           </div>
         )}
@@ -47,7 +48,7 @@ export default function LoginPage() {
               name="email"
               type="email"
               required
-              className="w-full rounded-sm border border-[#c7bd9b] bg-[#ffffff] px-4 py-3 text-[#3f403c] placeholder-[#a0a5b8] focus:border-[#58554e] focus:outline-none focus:ring-1 focus:ring-[#58554e] transition-all"
+              className="w-full rounded-lg border border-[#c7bd9b] bg-[#f8f7f3] px-4 py-3 text-[#3f403c] placeholder-[#a0a5b8] focus:border-[#58554e] focus:outline-none focus:ring-2 focus:ring-[#58554e]/30 transition-all"
               placeholder="you@agency.com"
             />
           </div>
@@ -60,17 +61,18 @@ export default function LoginPage() {
               name="password"
               type="password"
               required
-              className="w-full rounded-sm border border-[#c7bd9b] bg-[#ffffff] px-4 py-3 text-[#3f403c] placeholder-[#a0a5b8] focus:border-[#58554e] focus:outline-none focus:ring-1 focus:ring-[#58554e] transition-all"
+              className="w-full rounded-lg border border-[#c7bd9b] bg-[#f8f7f3] px-4 py-3 text-[#3f403c] placeholder-[#a0a5b8] focus:border-[#58554e] focus:outline-none focus:ring-2 focus:ring-[#58554e]/30 transition-all"
               placeholder="••••••••"
             />
           </div>
 
-          <div className="pt-4">
+          <div className="pt-2">
             <button
               type="submit"
-              className="w-full rounded-sm bg-[#3f403c] px-4 py-3.5 text-sm font-bold text-[#ffffff] hover:bg-[#58554e] focus:outline-none transition-colors shadow-sm"
+              disabled={isLoading}
+              className="w-full rounded-lg bg-[#3f403c] px-4 py-3.5 text-sm font-bold text-[#ffffff] hover:bg-[#58554e] focus:outline-none focus:ring-4 focus:ring-[#c7bd9b] transition-colors shadow-lg disabled:opacity-70"
             >
-              Sign In
+              {isLoading ? "Signing In..." : "Sign In"}
             </button>
           </div>
         </form>
