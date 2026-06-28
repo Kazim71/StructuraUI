@@ -19,7 +19,7 @@ export default function ContactPage() {
       <main className="max-w-4xl mx-auto px-6 py-24 text-center">
         <h1 className="text-5xl font-bold mb-6 text-[#3f403c]">Contact Sales</h1>
         <p className="text-lg text-[#58554e] leading-relaxed mb-12">
-          Interested in learning more about how StructuraUI can accelerate your team's workflow? Reach out to our enterprise specialists.
+          Interested in learning more about how StructuraUI can accelerate your team&apos;s workflow? Reach out to our enterprise specialists.
         </p>
         <div className="h-64 w-full bg-[#e3decd] rounded-sm flex items-center justify-center border border-[#c7bd9b]">
           <span className="text-[#58554e] font-medium">Contact form coming soon...</span>
