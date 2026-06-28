@@ -74,7 +74,11 @@ export async function middleware(request: NextRequest) {
   if (user && isAdminRoute) {
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
     if (!profile || profile.role !== 'admin') {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      // Not an admin: bounce back to the dashboard with an error flag the
+      // dashboard page can surface as a toast.
+      const redirectUrl = new URL('/dashboard', request.url);
+      redirectUrl.searchParams.set('error', 'unauthorized');
+      return NextResponse.redirect(redirectUrl);
     }
   }
 
