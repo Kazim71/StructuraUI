@@ -1,16 +1,16 @@
 "use client";
 
-import { login } from "@/app/actions/auth";
+import { signup } from "@/app/actions/auth";
 import { useState } from "react";
 import Logo from "@/components/Logo";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (formData: FormData) => {
     setError(null);
-    const result = await login(formData);
+    const result = await signup(formData);
     
     if (result?.error) {
       setError(result.error);
@@ -28,7 +28,7 @@ export default function LoginPage() {
             StructuraUI
           </h1>
           <p className="mt-2 text-sm font-medium text-[#58554e]">
-            Sign in to your workspace
+            Create your new workspace
           </p>
         </div>
 
@@ -70,18 +70,18 @@ export default function LoginPage() {
               type="submit"
               className="w-full rounded-sm bg-[#3f403c] px-4 py-3.5 text-sm font-bold text-[#ffffff] hover:bg-[#58554e] focus:outline-none transition-colors shadow-sm"
             >
-              Sign In
+              Sign Up
             </button>
           </div>
         </form>
 
         <div className="mt-8 text-center text-sm font-bold text-[#58554e]">
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <Link
-            href="/signup"
+            href="/login"
             className="text-[#809bce] hover:text-[#3f403c] hover:underline focus:outline-none transition-colors"
           >
-            Sign up
+            Sign in
           </Link>
         </div>
       </div>
