@@ -55,7 +55,7 @@ export default async function DashboardPage() {
           </div>
           <h2 className="text-xl font-bold text-[#3f403c] dark:text-[#e8e6df] mb-2">No projects yet</h2>
           <p className="text-sm text-[#58554e] dark:text-[#b8b4a8] max-w-sm mb-6">
-            Create your first project using the "New Project" button above to start building beautiful, structured web layouts.
+            Create your first project using the &ldquo;New Project&rdquo; button above to start building beautiful, structured web layouts.
           </p>
         </div>
       ) : (
