@@ -7,6 +7,27 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError || !profile) {
+      return NextResponse.json({ success: false, error: "Profile not found" }, { status: 404 });
+    }
+
+    if (profile.role !== 'admin' && !profile.is_pro && (profile.generations_count || 0) >= 1) {
+      return NextResponse.json({ success: false, error: "FREE_LIMIT_REACHED" }, { status: 403 });
+    }
+
     const body = await req.json();
     const { requirements } = body;
 
@@ -15,36 +36,6 @@ export async function POST(req: NextRequest) {
         { success: false, error: "Missing or invalid 'requirements' field." },
         { status: 400 }
       );
-    }
-
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role, is_pro, generations_count")
-      .eq("id", user.id)
-      .single();
-
-    // Default values if profile doesn't exist yet
-    const role = profile?.role || "user";
-    const isPro = profile?.is_pro || false;
-    const genCount = profile?.generations_count || 0;
-
-    if (role !== "admin") {
-      if (!isPro && genCount >= 1) {
-        return NextResponse.json(
-          { success: false, error: "FREE_LIMIT_REACHED" },
-          { status: 403 }
-        );
-      }
     }
 
     const systemInstruction = `You are an expert web designer and structured data extractor. 
@@ -131,12 +122,7 @@ Return ONLY the valid, minified JSON object. Do NOT wrap the output in markdown 
     // Parse the response to ensure it is valid JSON before sending it to the client
     const parsedData = JSON.parse(jsonText);
 
-    if (role !== "admin") {
-      await supabase
-        .from("profiles")
-        .update({ generations_count: genCount + 1 })
-        .eq("id", user.id);
-    }
+    await supabase.from('profiles').update({ generations_count: (profile.generations_count || 0) + 1 }).eq('id', user.id);
 
     return NextResponse.json({ success: true, data: parsedData });
   } catch (error: any) {

@@ -1,8 +1,21 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import ThemeToggle from "@/components/ThemeToggle";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+export default async function Home() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-export default function Home() {
+  const handleSignOut = async () => {
+    "use server";
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    redirect("/");
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f7f3] dark:bg-[#2b2a27] text-[#3f403c] dark:text-[#f8f7f3] font-sans selection:bg-[#c7bd9b] selection:text-[#3f403c]">
       {/* 1. Header */}
@@ -16,18 +29,39 @@ export default function Home() {
           </nav>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <Link 
-              href="/login"
-              className="text-sm font-bold text-[#58554e] dark:text-[#c7bd9b] hover:text-[#3f403c] dark:hover:text-[#f8f7f3] transition-colors"
-            >
-              Log in
-            </Link>
-            <Link 
-              href="/signup"
-              className="rounded-sm bg-[#3f403c] dark:bg-[#f8f7f3] px-6 py-2.5 text-sm font-bold text-[#ffffff] dark:text-[#3f403c] hover:bg-[#58554e] dark:hover:bg-[#e3decd] focus:outline-none transition-colors"
-            >
-              Sign Up
-            </Link>
+            {user ? (
+              <>
+                <Link 
+                  href="/dashboard"
+                  className="text-sm font-bold text-[#58554e] dark:text-[#c7bd9b] hover:text-[#3f403c] dark:hover:text-[#f8f7f3] transition-colors"
+                >
+                  Go to Dashboard
+                </Link>
+                <form action={handleSignOut}>
+                  <button 
+                    type="submit"
+                    className="rounded-sm bg-[#3f403c] dark:bg-[#f8f7f3] px-6 py-2.5 text-sm font-bold text-[#ffffff] dark:text-[#3f403c] hover:bg-[#58554e] dark:hover:bg-[#e3decd] focus:outline-none transition-colors"
+                  >
+                    Sign Out
+                  </button>
+                </form>
+              </>
+            ) : (
+              <>
+                <Link 
+                  href="/login"
+                  className="text-sm font-bold text-[#58554e] dark:text-[#c7bd9b] hover:text-[#3f403c] dark:hover:text-[#f8f7f3] transition-colors"
+                >
+                  Log in
+                </Link>
+                <Link 
+                  href="/signup"
+                  className="rounded-sm bg-[#3f403c] dark:bg-[#f8f7f3] px-6 py-2.5 text-sm font-bold text-[#ffffff] dark:text-[#3f403c] hover:bg-[#58554e] dark:hover:bg-[#e3decd] focus:outline-none transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>

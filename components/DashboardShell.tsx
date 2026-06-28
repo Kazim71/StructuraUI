@@ -13,13 +13,11 @@ type Project = {
 
 export default function DashboardShell({
   userEmail,
-  userRole = "user",
   projects,
   logoutAction,
   createProjectAction,
 }: {
   userEmail: string;
-  userRole?: string;
   projects: Project[] | null;
   logoutAction: () => Promise<void>;
   createProjectAction: (formData: FormData) => Promise<void>;
@@ -55,9 +53,6 @@ export default function DashboardShell({
           <SidebarLink label="All Projects" active />
           <SidebarLink label="Recent" />
           <SidebarLink label="Drafts" />
-          {userRole === "admin" && (
-            <SidebarLink label="Admin Panel" />
-          )}
           <div className="pt-6">
             <div className="px-3 pb-2 text-xs font-bold uppercase tracking-widest text-[#58554e]/60 dark:text-[#b8b4a8]/60">
               Settings
@@ -121,23 +116,8 @@ export default function DashboardShell({
             New Project
           </button>
 
-          {/* Notification Bell */}
-          <button className="shrink-0 p-2 rounded-lg hover:bg-[#e3decd] dark:hover:bg-[#322f28] transition-colors relative">
-            <svg className="h-5 w-5 text-[#58554e] dark:text-[#b8b4a8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#809bce]"></span>
-          </button>
-
           {/* Theme Toggle */}
           <ThemeToggle />
-
-          {/* User Avatar */}
-          <button className="shrink-0 h-8 w-8 rounded-full bg-[#c7bd9b] dark:bg-[#4a4940] border border-[#a69c7a] dark:border-[#58554e] flex items-center justify-center overflow-hidden">
-            <span className="text-xs font-bold text-[#3f403c] dark:text-[#e8e6df]">
-              {userEmail.charAt(0).toUpperCase()}
-            </span>
-          </button>
         </header>
 
         {/* New Project Inline Form */}

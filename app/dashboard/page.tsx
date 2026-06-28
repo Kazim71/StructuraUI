@@ -14,14 +14,6 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  const userRole = profile?.role || "user";
-
   const { data: projects } = await supabase
     .from("projects")
     .select("*")
@@ -43,7 +35,6 @@ export default async function DashboardPage() {
   return (
     <DashboardShell
       userEmail={user.email || ""}
-      userRole={userRole}
       projects={projects}
       logoutAction={logout}
       createProjectAction={handleCreateProject}

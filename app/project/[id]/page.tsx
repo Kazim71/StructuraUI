@@ -130,14 +130,17 @@ export default function EditorWorkspace() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ requirements: promptInput }),
       });
+
+      if (res.status === 403) {
+        setShowUpgradeModal(true);
+        setIsGenerating(false);
+        return;
+      }
+
       const json = await res.json();
 
       if (!json.success) {
-        if (json.error === "FREE_LIMIT_REACHED") {
-          setShowUpgradeModal(true);
-        } else {
-          alert("Error generating layout: " + json.error);
-        }
+        alert("Error generating layout: " + json.error);
         return;
       }
 
@@ -253,20 +256,16 @@ export default function EditorWorkspace() {
     if (!editorRef.current) return;
     const html = editorRef.current.getHtml();
     const css = editorRef.current.getCss();
-
     const fullHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StructuraUI Export</title>
+  <title>Exported Layout</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; background-color: #f8f7f3; }
-  </style>
 </head>
-<body>
-  ${html}
+<body style="margin:0;padding:0;">
+${html}
 </body>
 </html>`;
 
@@ -274,7 +273,7 @@ export default function EditorWorkspace() {
     zip.file("index.html", fullHtml);
     zip.file("styles.css", css || "");
     zip.generateAsync({ type: "blob" }).then((content) => {
-      saveAs(content, "structura-project.zip");
+      saveAs(content, "structuraui-export.zip");
     });
   };
 
@@ -306,62 +305,47 @@ export default function EditorWorkspace() {
           >
             {isGenerating ? "Processing..." : "Generate AI Layout"}
           </button>
-        </div>
-
-        <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={handleExport}
-            className="px-4 py-2 text-sm font-bold text-[#3f403c] bg-[#e0dac9] border border-[#c7bd9b] rounded-sm hover:bg-[#d1cbb8] focus:outline-none focus:ring-2 focus:ring-[#3f403c] transition-colors shadow-sm flex items-center gap-2"
+            className="px-4 py-2 text-sm font-bold text-[#3f403c] bg-[#e0dac9] border border-[#c7bd9b] rounded-sm hover:bg-[#c7bd9b] focus:outline-none focus:ring-2 focus:ring-[#c7bd9b] transition-colors whitespace-nowrap shadow-sm"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
             Download Code
           </button>
-          <button
-            onClick={handleSaveLayout}
-            disabled={isSaving}
-            className="px-6 py-2 text-sm font-bold text-[#ffffff] bg-[#3f403c] rounded-sm hover:bg-[#58554e] focus:outline-none focus:ring-2 focus:ring-[#3f403c] disabled:opacity-50 transition-colors shadow-sm"
-          >
-            {isSaving ? "Saving..." : "Save Layout"}
-          </button>
         </div>
+
+        <button
+          onClick={handleSaveLayout}
+          disabled={isSaving}
+          className="px-6 py-2 text-sm font-bold text-[#ffffff] bg-[#3f403c] rounded-sm hover:bg-[#58554e] focus:outline-none focus:ring-2 focus:ring-[#3f403c] disabled:opacity-50 transition-colors shrink-0 shadow-sm"
+        >
+          {isSaving ? "Saving..." : "Save Layout"}
+        </button>
       </header>
 
       <main className="flex-1 relative w-full h-full bg-[#e3decd]">
         <div id="gjs" className="absolute inset-0"></div>
-      </main>
-
-      {/* Paywall Modal */}
-      {showUpgradeModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-[#f8f7f3] border border-[#c7bd9b] rounded-xl shadow-2xl max-w-md w-full p-8 text-center relative">
-            <button
-              onClick={() => setShowUpgradeModal(false)}
-              className="absolute top-4 right-4 text-[#58554e] hover:text-[#3f403c] transition-colors p-1"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#e0dac9] border border-[#c7bd9b] mb-6 shadow-sm">
-              <svg className="h-8 w-8 text-[#809bce]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+        {showUpgradeModal && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+            <div className="bg-[#f8f7f3] border border-[#c7bd9b] p-8 rounded-lg shadow-2xl max-w-md w-full text-center">
+              <h2 className="text-2xl font-bold text-[#3f403c] mb-4">Upgrade to Pro</h2>
+              <p className="text-[#58554e] mb-8 leading-relaxed">
+                You've reached your free AI generation limit. Upgrade to Pro for unlimited generations, premium components, and advanced exports.
+              </p>
+              <div className="flex flex-col gap-3">
+                <button className="w-full py-3 bg-[#3f403c] text-white rounded-md font-bold hover:bg-[#58554e] transition-colors">
+                  Upgrade Now
+                </button>
+                <button 
+                  onClick={() => setShowUpgradeModal(false)}
+                  className="w-full py-3 bg-[#e0dac9] text-[#3f403c] rounded-md font-bold hover:bg-[#c7bd9b] transition-colors"
+                >
+                  Maybe Later
+                </button>
+              </div>
             </div>
-            <h2 className="text-2xl font-extrabold text-[#3f403c] mb-3">Upgrade to Pro</h2>
-            <p className="text-[#58554e] mb-8 leading-relaxed">
-              You&apos;ve reached your free AI generation limit. Upgrade to Pro to unlock unlimited generative layouts and priority access.
-            </p>
-            <button
-              onClick={() => setShowUpgradeModal(false)}
-              className="w-full rounded-sm bg-[#3f403c] px-6 py-3.5 text-sm font-bold text-white hover:bg-[#58554e] shadow-md transition-all active:scale-[0.98]"
-            >
-              Upgrade Now
-            </button>
           </div>
-        </div>
-      )}
+        )}
+      </main>
     </div>
   );
 }
