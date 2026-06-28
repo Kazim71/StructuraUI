@@ -55,7 +55,7 @@ export default function DashboardShell({
           <SidebarLink label="All Projects" active />
           <SidebarLink label="Recent" />
           <SidebarLink label="Drafts" />
-          {userRole === "admin" && <SidebarLink label="Admin Panel" />}
+          {userRole === "admin" && <SidebarLink label="Admin Panel" href="/dashboard/admin" />}
           <div className="pt-6">
             <div className="px-3 pb-2 text-xs font-bold uppercase tracking-widest text-[#58554e]/60 dark:text-[#b8b4a8]/60">
               Settings
@@ -165,16 +165,28 @@ export default function DashboardShell({
   );
 }
 
-function SidebarLink({ label, active = false }: { label: string; active?: boolean }) {
-  return (
-    <button
-      className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
-        active
-          ? "bg-[#f1efe6] dark:bg-[#26251f] text-[#3f403c] dark:text-[#e8e6df] shadow-sm"
-          : "text-[#58554e] dark:text-[#b8b4a8] hover:bg-[#f1efe6]/60 dark:hover:bg-[#26251f]/60 hover:text-[#3f403c] dark:hover:text-[#e8e6df]"
-      }`}
-    >
-      {label}
-    </button>
-  );
+function SidebarLink({
+  label,
+  active = false,
+  href,
+}: {
+  label: string;
+  active?: boolean;
+  href?: string;
+}) {
+  const className = `w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
+    active
+      ? "bg-[#f1efe6] dark:bg-[#26251f] text-[#3f403c] dark:text-[#e8e6df] shadow-sm"
+      : "text-[#58554e] dark:text-[#b8b4a8] hover:bg-[#f1efe6]/60 dark:hover:bg-[#26251f]/60 hover:text-[#3f403c] dark:hover:text-[#e8e6df]"
+  }`;
+
+  if (href) {
+    return (
+      <Link href={href} className={className}>
+        {label}
+      </Link>
+    );
+  }
+
+  return <button className={className}>{label}</button>;
 }
