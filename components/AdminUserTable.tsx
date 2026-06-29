@@ -18,7 +18,7 @@ export default function AdminUserTable({
   deleteUserAction,
 }: {
   users: AdminUser[];
-  toggleProAction: (userId: string, isPro: boolean) => Promise<ActionResult>;
+  toggleProAction: (userId: string, currentStatus: boolean) => Promise<void>;
   deleteUserAction: (userId: string) => Promise<ActionResult>;
 }) {
   const [rows, setRows] = useState(users);
@@ -28,13 +28,13 @@ export default function AdminUserTable({
   function handleTogglePro(userId: string, current: boolean) {
     setPendingId(userId);
     startTransition(async () => {
-      const result = await toggleProAction(userId, !current);
-      if (result.success) {
+      try {
+        await toggleProAction(userId, current);
         setRows((prev) =>
           prev.map((u) => (u.id === userId ? { ...u, is_pro: !current } : u))
         );
-      } else {
-        alert(result.error || "Failed to update Pro status");
+      } catch (err: any) {
+        alert(err?.message || "Failed to update Pro status");
       }
       setPendingId(null);
     });

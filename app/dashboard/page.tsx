@@ -3,6 +3,7 @@ import { createProject } from "@/app/actions/projects";
 import { logout } from "@/app/actions/auth";
 import { redirect } from "next/navigation";
 import DashboardShell from "@/components/DashboardShell";
+import DeleteProjectButton from "@/components/DeleteProjectButton";
 import Link from "next/link";
 
 export default async function DashboardPage() {
@@ -63,8 +64,10 @@ export default async function DashboardPage() {
           {projects.map((project) => (
             <div
               key={project.id}
-              className="group flex flex-col rounded-xl border border-[#c7bd9b] dark:border-[#4a4940] bg-white dark:bg-[#322f28] overflow-hidden shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#809bce]"
+              className="group relative flex flex-col rounded-xl border border-[#c7bd9b] dark:border-[#4a4940] bg-white dark:bg-[#322f28] overflow-hidden shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#809bce]"
             >
+              <DeleteProjectButton projectId={project.id} />
+
               {/* Preview Area */}
               <div className="relative h-40 bg-[#f1efe6] dark:bg-[#26251f] flex items-center justify-center border-b border-[#c7bd9b]/50 dark:border-[#4a4940]/50">
                 <div className="flex flex-col items-center gap-2 opacity-40 group-hover:opacity-60 transition-opacity">

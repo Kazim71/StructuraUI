@@ -24,8 +24,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Profile not found" }, { status: 404 });
     }
 
-    if (profile.role !== 'admin' && !profile.is_pro && (profile.generations_count || 0) >= 1) {
-      return NextResponse.json({ success: false, error: "FREE_LIMIT_REACHED" }, { status: 403 });
+    const hasUnlimitedAccess = profile.role === 'admin' || profile.is_pro === true;
+
+    if (!hasUnlimitedAccess && (profile.generations_count || 0) >= 1) {
+      return NextResponse.json({ error: "FREE_LIMIT_REACHED" }, { status: 403 });
     }
 
     const body = await req.json();

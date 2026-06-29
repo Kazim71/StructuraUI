@@ -31,30 +31,24 @@ async function requireAdmin() {
   return { authorized: true as const };
 }
 
-export async function toggleUserProStatus(userId: string, isPro: boolean) {
+export async function toggleUserProStatus(userId: string, currentStatus: boolean) {
   const { authorized } = await requireAdmin();
   if (!authorized) {
-    return { success: false, error: "Unauthorized: Admins only." };
+    throw new Error("Unauthorized");
   }
 
-  try {
-    const supabase = createAdminClient();
-    const { error } = await supabase
-      .from("profiles")
-      .update({ is_pro: isPro })
-      .eq("id", userId);
+  const supabase = createAdminClient();
 
-    if (error) {
-      console.error("Error toggling pro status:", error);
-      return { success: false, error: error.message };
-    }
+  const { error: updateError } = await supabase
+    .from("profiles")
+    .update({ is_pro: !currentStatus })
+    .eq("id", userId);
 
-    revalidatePath("/dashboard/admin");
-    return { success: true };
-  } catch (err: any) {
-    console.error("Unexpected error in toggleUserProStatus:", err);
-    return { success: false, error: err.message || "An unexpected error occurred" };
+  if (updateError) {
+    throw new Error(updateError.message);
   }
+
+  revalidatePath("/dashboard/admin");
 }
 
 export async function deleteUser(userId: string) {
